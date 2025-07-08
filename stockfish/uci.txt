@@ -1,0 +1,59 @@
+# 📘 UCI - Universal Chess Interface
+
+---
+
+## 🔧 Comandos de Inicialização
+
+### `uci`
+- Ativa o modo UCI da engine.
+- Deve ser enviado imediatamente após iniciar a engine.
+- **Resposta esperada**: Detalhes da engine e `uciok`.
+
+### `isready`
+- Verifica se a engine está pronta para receber comandos.
+- Deve ser usado antes de enviar outras instruções.
+- **Resposta esperada**: `readyok`.
+
+### `ucinewgame`
+- Inicia uma nova partida.
+- Zera o estado interno da engine.
+- Deve ser usado antes de analisar uma nova posição ou jogo.
+
+---
+
+## 📌 Definição de Posição
+
+### `position`
+Define a posição atual no tabuleiro.
+
+#### Exemplos:
+- **Início padrão + lances**:
+
+## ⏱️ Controle de Tempo e Busca
+
+### `go`
+Inicia a busca pela melhor jogada.
+
+#### Formas de uso:
+- `go depth 10` → Busca por 10 plies.
+- `go movetime 2000` → Busca por 2000ms.
+- `go infinite` → Continua buscando até receber `stop`.
+- `go wtime 60000 btime 60000` → Considera tempos de relógio (em ms).
+
+### `stop`
+- Interrompe uma busca em andamento.
+
+---
+
+## ⚙️ Configuração de Opções
+
+### `setoption name <opção> value <valor>`
+Define configurações específicas da engine.
+
+#### Exemplos:
+```bash
+setoption name Hash value 128
+setoption name Threads value 4
+setoption name Ponder value true
+
+quit - finaliza a engine com segurança.
