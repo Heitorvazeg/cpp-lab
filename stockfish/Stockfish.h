@@ -24,7 +24,7 @@ public:
     // Finaliza comunicação com a Engine e limpa recursos
     ~Stockfish();
 
-    // Função para enviar comandos à Engine
+    // Envia comandos para a Engine
     void send(const std::string& cmd);
 
     // Aguarda até que a Engine envie uma resposta
@@ -34,6 +34,13 @@ public:
     // depth: Define a profundidade da análise
     // moves: Vetor com todos os lances desde a posição inicial até a atual
     std::string analyse(const std::vector<std::string>& moves, int depth);
+
+    // Avalia a posição em centipawns
+    std::string eval(const std::vector<std::string>& moves, int depth);
+
+    // Devolve a sequência de lances das melhores linhas
+    // n: Quantidade de linhas para análise
+    std::vector<std::string> lines(const std::vector<std::string>& moves, int depth, int n);
 };
 
-#endif STOCKFISH_H
+#endif

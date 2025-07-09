@@ -1,4 +1,4 @@
-#include <Stockfish.h>
+#include "Stockfish.h"
 
 Stockfish::Stockfish(const std::string& path) {
     pipe(to_engine);
@@ -65,7 +65,7 @@ std::string Stockfish::analyse(const std::vector<std::string>& moves, int depth)
 
     send(cmd.str());
 
-    send("go depth" + std::to_string(depth));
+    send("go depth " + std::to_string(depth));
 
     std::string bestmove;
     char buffer[512];
@@ -79,4 +79,77 @@ std::string Stockfish::analyse(const std::vector<std::string>& moves, int depth)
         }
     }
     return bestmove;
+}
+
+std::string Stockfish::eval(const std::vector<std::string>& moves, int depth) {
+    std::stringstream cmd;
+    cmd << "position startpos moves";
+
+    for (const auto& move : moves) {
+        cmd << " " << move;
+    }
+
+    send(cmd.str());
+    send("go depth " + std::to_string(depth));
+
+    std::string val;
+    char buffer[512];
+    while(fgets(buffer, sizeof(buffer), out)) {
+        std::string line(buffer);
+        std::cout << ">> " << line;
+
+        if (line.find("score cp") != std::string::npos || line.find("score mate") != std::string::npos) {
+            val = line;
+
+        } else if (line.find("bestmove") != std::string::npos) {
+            break;
+        }
+    }
+
+    int s = val.size();
+    std::vector<std::string> valV;
+    std::string palavra = "";
+    for (int i = 0; i < s; i++) {
+        if (val[i] == ' ') {
+            if (!palavra.empty()) {
+                valV.push_back(palavra);
+                palavra = "";
+            }
+            continue;
+        }
+        palavra += val[i];
+    }
+
+    std::stringstream result;
+    result << valV[8] << valV[9];
+    return result.str();
+}
+
+std::vector<std::string> Stockfish::lines(const std::vector<std::string>& moves, int depth, int n) {
+    send("setoption name MultiPV value " + std::to_string(n));
+    
+    std::stringstream cmd;
+    cmd << "position startpos moves";
+    for (const auto& move : moves) {
+        cmd << ">> " << move;
+    }
+    send(cmd.str());
+
+
+    send("go depth " + std::to_string(depth));
+    
+    std::vector<std::string> results;
+    char buffer[512];
+    while(fgets(buffer, sizeof(buffer), out)) {
+        std::string line(buffer);
+
+        if (line.find("multipv") != std::string::npos) {
+            results.push_back(line);
+        }
+        
+        if (line.find("bestmove") != std::string::npos) {
+            break;
+        }
+    }
+    return results;
 }
