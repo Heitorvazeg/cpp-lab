@@ -1,4 +1,4 @@
-Este projeto demonstra como integrar o motor de xadrez **Stockfish** com C++ utilizando o protocolo **UCI (Universal Chess Interface)**.
+Este projeto demonstra como integrar o motor de xadrez Open-Source **Stockfish** com C++ utilizando o protocolo **UCI (Universal Chess Interface)**.
 
 Através da execução do processo Stockfish e comunicação via `stdin`/`stdout`, o programa envia posições e comandos, recebe lances recomendados e interpreta os resultados.
 
