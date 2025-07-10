@@ -6,10 +6,10 @@ Através da execução do processo Stockfish e comunicação via `stdin`/`stdout
 
 ## 📌 Funcionalidades
 
-- Inicializa o motor Stockfish via linha de comando
-- Define posições com base na notação `startpos` + lances (e.g., `e2e4 e7e5`)
-- Solicita o melhor lance até uma profundidade configurável
-- Exibe as respostas completas do motor
-- Interpreta o `bestmove` retornado
+-Inserção interativa de lances em formato UCI via linha de comando;
+-Análise do melhor lance a partir de uma posição (go depth);
+-Avaliação numérica da posição (score em centipawns ou mate);
+-Extração das principais linhas de análise com MultiPV;
+-Comunicação direta com a engine Stockfish via fork(), pipe() e dup2()
 
 ---
