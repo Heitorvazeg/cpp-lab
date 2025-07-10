@@ -1,4 +1,5 @@
 #include "Stockfish.h"
+#include <iomanip>
 
 Stockfish::Stockfish(const std::string& path) {
     pipe(to_engine);
@@ -121,7 +122,21 @@ std::string Stockfish::eval(const std::vector<std::string>& moves, int depth) {
     }
 
     std::stringstream result;
-    result << valV[8] << valV[9];
+    if (std::stoi(valV[9]) < 0) {
+        if (valV[8] == "mate") {
+            result << valV[8] << " " << valV[9];
+            return result.str();
+        }
+        result << valV[8] << " " << std::fixed << std::setprecision(2) << std::stoi(valV[9]) / 100.0;
+
+    } else {
+        if (valV[8] == "mate") {
+            result << valV[8] << " " << valV[9];
+            return result.str();
+        }
+        result << valV[8] << " " << std::fixed << std::setprecision(2) << std::stoi(valV[9]) / 100.0;
+    }
+
     return result.str();
 }
 
@@ -131,7 +146,7 @@ std::vector<std::string> Stockfish::lines(const std::vector<std::string>& moves,
     std::stringstream cmd;
     cmd << "position startpos moves";
     for (const auto& move : moves) {
-        cmd << ">> " << move;
+        cmd << " " << move;
     }
     send(cmd.str());
 
@@ -143,13 +158,15 @@ std::vector<std::string> Stockfish::lines(const std::vector<std::string>& moves,
     while(fgets(buffer, sizeof(buffer), out)) {
         std::string line(buffer);
 
-        if (line.find("multipv") != std::string::npos) {
-            results.push_back(line);
+        for (int i = 1; i <= n; i++) {
+            if (line.find("multipv "+std::to_string(i)) != std::string::npos) {
+                results.push_back(line);
+            }
         }
-        
         if (line.find("bestmove") != std::string::npos) {
             break;
         }
     }
+
     return results;
 }
