@@ -8,14 +8,13 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-class Cell
-{
+class Cell {
 private:
     // Executa comandos com binários externos
     void executeCommand(const std::vector<std::string>& tokens);
 
     // Lida com Pipes para comandos sequenciais
-    void handlePipes();
+    void handlePipes(const std::vector<std::string>& tokens);
 
     // Lida com redirecionamentos de resultados a arquivos
     void handleRedirections();

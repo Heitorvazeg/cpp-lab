@@ -64,6 +64,7 @@
         "cinttypes": "cpp",
         "variant": "cpp",
         "list": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "unordered_set": "cpp"
     }
 }
