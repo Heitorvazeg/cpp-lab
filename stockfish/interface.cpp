@@ -16,7 +16,7 @@ std::vector<std::string> readMoves() {
     return moves;
 }
 
-// Lê dois valores inteiros auxiliares: N e Depth
+// Lê um valor inteiro auxiliar N ou Depth
 int readInt(const std::string& prompt) {
     int val;
     std::cout << prompt;
