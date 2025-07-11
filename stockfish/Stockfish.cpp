@@ -16,7 +16,7 @@ Stockfish::Stockfish(const std::string& path) {
         perror("Erro ao executar Stockfish");
         exit(1);
 
-    } else {
+    } else if (pid > 0) {
         close(to_engine[0]);
         close(from_engine[1]);
 
@@ -30,6 +30,9 @@ Stockfish::Stockfish(const std::string& path) {
         waitFor("readyok");
 
         send("ucinewgame");
+
+    } else {
+        perror("fork");
     }
 }
 
