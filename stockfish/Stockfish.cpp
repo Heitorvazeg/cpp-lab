@@ -125,21 +125,14 @@ std::string Stockfish::eval(const std::vector<std::string>& moves, int depth) {
     }
 
     std::stringstream result;
-    if (std::stoi(valV[9]) < 0) {
-        if (valV[8] == "mate") {
-            result << valV[8] << " " << valV[9];
-            return result.str();
-        }
-        result << valV[8] << " " << std::fixed << std::setprecision(2) << std::stoi(valV[9]) / 100.0;
+    if (valV[8] == "mate") {
+        result << valV[8] << " " << valV[9];
+        return result.str();
 
     } else {
-        if (valV[8] == "mate") {
-            result << valV[8] << " " << valV[9];
-            return result.str();
-        }
         result << valV[8] << " " << std::fixed << std::setprecision(2) << std::stoi(valV[9]) / 100.0;
     }
-
+    
     return result.str();
 }
 
