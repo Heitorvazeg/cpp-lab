@@ -17,18 +17,18 @@ private:
     FILE *in, *out;
     pid_t pid;
 
+    // Envia comandos para a Engine
+    void send(const std::string& cmd);
+
+    // Aguarda até que a Engine envie uma resposta
+    void waitFor(const std::string& expected);
+
 public:
     // Constructor da Classe Stockfish com Path padrão em "./stockfish"
     explicit Stockfish(const std::string& path = "./stockfish");
 
     // Finaliza comunicação com a Engine e limpa recursos
     ~Stockfish();
-
-    // Envia comandos para a Engine
-    void send(const std::string& cmd);
-
-    // Aguarda até que a Engine envie uma resposta
-    void waitFor(const std::string& expected);
 
     // Analisa a posição atual baseada na sequência de lances
     // depth: Define a profundidade da análise
