@@ -17,7 +17,7 @@ private:
     void handlePipes(const std::vector<std::string>& tokens);
 
     // Lida com redirecionamentos de resultados a arquivos
-    void handleRedirections();
+    void handleRedirections(const std::vector<std::string>& tokens);
 
     // Confere se o primeiro Token é um comando interno
     bool isInternalCommand(const std::string& command);
