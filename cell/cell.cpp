@@ -4,11 +4,13 @@
 
 // Protótipos de utils
 void printCell();
-std::vector<std::string> formatForHandlePipes(const std::vector<std::string> tokens);
+std::vector<std::string> formatTokens(const std::vector<std::string> tokens);
 std::unordered_set<std::string> showInternalCommands();
 
 // Protótipos de comandos internos
-void handleCd();
+void handleCd(const std::vector<std::string>& tokens);
+void handleHelp();
+void handleGrita(const std::vector<std::string>& tokens);
 
 void Cell::run() {
     std::string input;
@@ -34,7 +36,7 @@ void Cell::run() {
 
         } else if (std::find(tokens.begin(), tokens.end(), ">") != tokens.end() ||
                     std::find(tokens.begin(), tokens.end(), "<") != tokens.end()) {
-            handleRedirections();
+            handleRedirections(tokens);
 
         } else {
             executeCommand(tokens);
@@ -58,7 +60,7 @@ void Cell::executeCommand(const std::vector<std::string>& tokens) {
         args.push_back(nullptr);
 
         execvp(args[0], args.data());
-        perror("execvp");
+        perror("Comando inválido");
         exit(EXIT_FAILURE);
 
     } else if (pid > 0) {
@@ -74,7 +76,7 @@ void Cell::executeCommand(const std::vector<std::string>& tokens) {
 }
 
 void Cell::handlePipes(const std::vector<std::string>& tokens) {
-    std::vector<std::string> comandos = formatForHandlePipes(tokens);
+    std::vector<std::string> comandos = formatTokens(tokens);
 
     // Quantidade de processos
     int s = comandos.size();
@@ -110,7 +112,7 @@ void Cell::handlePipes(const std::vector<std::string>& tokens) {
             argv.push_back(nullptr);
 
             execvp(argv[0], argv.data());
-            perror("execvp");
+            perror("Comando inválido");
             exit(EXIT_FAILURE);
 
         } else if (pid > 0) {
@@ -125,8 +127,84 @@ void Cell::handlePipes(const std::vector<std::string>& tokens) {
     }
 }
 
-void Cell::handleRedirections() {
+void Cell::handleRedirections(const std::vector<std::string>& tokens) {
+    std::vector<std::string> comandos;
+    std::string entrada, saida;
 
+    for (size_t i = 0; i < tokens.size(); i++) {
+        if (tokens[i] == ">") {
+            if (i + 1 < tokens.size()) saida = tokens[i+1];
+
+        } else if (tokens[i] == "<") {
+            if (i + 1 < tokens.size()) entrada = tokens[i+1];
+
+        } else {
+            comandos.push_back(tokens[i]);
+        }
+    }
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Filho
+
+        // Verifica se os arquivos são iguais
+        if (!entrada.empty() && !saida.empty()) {
+            if (entrada == saida) {
+                std::cerr << "Erro: arquivo de entrada e saida sao o mesmo.\n";
+                return;
+            }
+        }
+
+        // Redireciona entrada
+        if (!entrada.empty()) {
+            int in = open(entrada.c_str(), O_RDONLY);
+
+            if (in < 0) {
+                perror("open entrada");
+                exit(EXIT_FAILURE);
+            }
+
+            dup2(in, STDIN_FILENO);
+            close(in);
+        }
+
+        // Redireciona saida
+        if (!saida.empty()) {
+            // Flags:
+            // O_WRONLY: Permite escrita
+            // O_CREAT: Cria arquivo quando não existente
+            // O_TRUNC: Zera arquivo caso já esteja escrito
+            // 0644: Seta permissões para manipular arquivo
+            int out = open(saida.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+            if (out < 0) {
+                perror("open saida");
+                exit(EXIT_FAILURE);
+            }
+
+            dup2(out, STDOUT_FILENO);
+            close(out);
+        }
+
+        std::vector<char*> argv;
+        for (auto& comando : comandos) {
+            argv.push_back(const_cast<char*>(comando.c_str()));
+        }
+        argv.push_back(nullptr);
+
+        execvp(argv[0], argv.data());
+        perror("Comando Inválido");
+        exit(EXIT_FAILURE);
+
+    } else if (pid > 0) {
+        // Pai
+
+        wait(nullptr);
+    } else {
+        // Erro
+
+        perror("fork");
+    }
 }
 
 bool Cell::isInternalCommand(const std::string& command) {
@@ -141,7 +219,7 @@ bool Cell::isInternalCommand(const std::string& command) {
 
 void Cell::executeInternalCommand(const std::vector<std::string>& tokens) {
     if (tokens[0] == "cd") {
-        handleCd();
+        handleCd(tokens);
         return;
     }
 
@@ -149,9 +227,20 @@ void Cell::executeInternalCommand(const std::vector<std::string>& tokens) {
         printCell();
         return;
     }
+
+    if (tokens[0] == "help") {
+        handleHelp();
+        return;
+    }
+
+    if (tokens[0] == "grita") {
+        handleGrita(tokens);
+        return;
+    }
 }
 
 std::vector<std::string> Cell::tokenize(const std::string& input) {
+    // istringstream é melhor para criar vetores de string
     std::istringstream iss(input);
     std::string token;
     std::vector<std::string> tokens;
