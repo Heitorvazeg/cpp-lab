@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
+#include <unistd.h>
+#include <limits.h>
 
 // Printa Célula bonitinha
 void printCell() {
@@ -21,7 +23,7 @@ void printCell() {
  
 // Formata um vetor de tokens e devolve o vetor de comandos sem pipes
 // Usado para descrever a quantidade de processos que serão executados
-std::vector<std::string> formatForHandlePipes(const std::vector<std::string> tokens) {
+std::vector<std::string> formatTokens(const std::vector<std::string> tokens) {
     std::vector<std::string> aux;
     std::string comando;
     
@@ -48,7 +50,22 @@ std::unordered_set<std::string> showInternalCommands() {
     if (comandos.empty()) {
         comandos.insert("cd");
         comandos.insert("cell");
+        comandos.insert("help");
+        comandos.insert("grita");
     }
     
     return comandos;
+}
+
+// Printa o diretório atual
+void showDirectory() {
+    // PATH_MAX é o tamanho máximo de um PATH
+    char cwd[PATH_MAX];
+
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << "Diretório atual: " << cwd << "\n";
+
+    } else {
+        perror("getcwd");
+    }
 }
