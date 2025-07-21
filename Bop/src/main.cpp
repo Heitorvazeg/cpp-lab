@@ -4,6 +4,9 @@
 
 #include "Bop.hpp"
 
+// Protótipos de utils
+std::string tokensToAsm(const std::vector<Token>& tokens);
+
 int main(int argc, char* argv[]) {
     // Verifica a quantidade de argumentos em argv
     if (argc < 2) {
@@ -41,11 +44,16 @@ int main(int argc, char* argv[]) {
         b.tokenize(line, Tokens);
     }
 
-    for (auto t : Tokens) {
-        if (t.Value.has_value()) {
-            std::cout << t.Value.value();
-        }
+    // Dentro do próprio escopo
+    {
+        // Gera arquivo de saída em Assembly
+        std::fstream file("out.asm", std::ios::out);
+        file << tokensToAsm(Tokens);
     }
+
+    // Chama nasm para gerar objeto e executável
+    system("nasm -felf64 out.asm");
+    system("ld -o out out.o");
 
     return EXIT_SUCCESS;
 }
