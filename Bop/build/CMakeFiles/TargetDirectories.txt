@@ -1,3 +1,0 @@
-/home/heitor-vaz/programas/cpp-lab/Bop/build/CMakeFiles/bp.dir
-/home/heitor-vaz/programas/cpp-lab/Bop/build/CMakeFiles/edit_cache.dir
-/home/heitor-vaz/programas/cpp-lab/Bop/build/CMakeFiles/rebuild_cache.dir

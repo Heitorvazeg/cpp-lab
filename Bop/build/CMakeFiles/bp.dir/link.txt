@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/bp.dir/src/lexer.cpp.o CMakeFiles/bp.dir/src/main.cpp.o CMakeFiles/bp.dir/src/utils.cpp.o -o bp 
